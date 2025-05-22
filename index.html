@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Status Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --text-color: #333;
+            --light-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --error-color: #f44336;
+            --success-color: #4caf50;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('estate.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            transition: all 0.5s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Introduction Page Styles */
+        .intro-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 80px 40px 40px;
+            text-align: center;
+            backdrop-filter: blur(3px);
+        }
+
+        .intro-content {
+            max-width: 800px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease;
+        }
+
+        .intro-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .intro-card {
+            flex: 1 1 200px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            max-width: 250px;
+        }
+
+        .intro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .intro-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .intro-card h3 {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+
+        /* Form Page Styles */
+        .form-container {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin: 100px auto 40px;
+            color: var(--text-color);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .prediction-result {
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .prediction-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 15px 0;
+        }
+
+        .prediction-range {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn i {
+            margin-right: 5px;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+
+        /* Loading Spinner */
+        .spinner-container {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            margin-top: 40px;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .intro-content, .form-container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .intro-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .intro-card {
+                max-width: 100%;
+            }
+
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="#" class="logo">
+                <i class="fas fa-home"></i>
+                <span class="logo-text">QuickVal: Your Property, Our Expertise!</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Introduction Page -->
+    <div class="intro-container" id="introPage">
+        <div class="intro-content">
+            <h1>Real Estate Status Predictor</h1>
+            <p>Welcome to our advanced property valuation tool. Our machine learning model analyzes multiple factors to provide accurate price estimates for residential properties in your area.</p>
+
+            <div class="intro-cards">
+                <div class="intro-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Data-driven</h3>
+                    <p>Uses real market data to provide accurate valuations</p>
+                </div>
+                <div class="intro-card">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Instant</h3>
+                    <p>Get property valuations in seconds</p>
+                </div>
+                <div class="intro-card">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>Reliable</h3>
+                    <p>Trusted by real estate professionals</p>
+                </div>
+            </div>
+
+            <button class="btn" id="startBtn"><i class="fas fa-calculator"></i> Begin Valuation</button>
+        </div>
+    </div>
+
+    <!-- Prediction Form -->
+    <div class="form-container" id="formPage">
+        <div class="form-header">
+            <h1>Property Details</h1>
+            <p>Fill in the information below to get an estimated property value</p>
+        </div>
+
+        <form id="predictionForm" action="{{ url_for('predict') }}" method="POST">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="Property_Age">Property Age (years)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-calendar-alt"></i>
+                        <input type="number" id="Property_Age" name="Property_Age" min="0" max="200" required>
+                    </div>
+                    <span class="error-message" id="ageError">Please enter a valid property age (0-200 years)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Property_Type">Property Type</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-building"></i>
+                        <select id="Property_Type" name="Property_Type" required>
+                            <option value="">Select property type</option>
+                            <option value="apartment">Apartment</option>
+                            <option value="house">House</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="condo">Condominium</option>
+                            <option value="duplex">Duplex</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Num_Rooms">Number of Rooms</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-door-open"></i>
+                        <input type="number" id="Num_Rooms" name="Num_Rooms" min="1" max="20" required>
+                    </div>
+                    <span class="error-message" id="roomsError">Please enter a valid number of rooms (1-20)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Num_Bathrooms">Number of Bathrooms</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-bath"></i>
+                        <input type="number" id="Num_Bathrooms" name="Num_Bathrooms" min="1" max="10" step="0.5" required>
+                    </div>
+                    <span class="error-message" id="bathroomsError">Please enter a valid number of bathrooms (1-10)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Location_Area">Location Area</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <select id="Location_Area" name="Location_Area" required>
+                            <option value="">Select location area</option>
+                            <option value="urban">Ameerpet</option>
+                            <option value="suburban">Gachibowli</option>
+                            <option value="rural">Namapally</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spinner-container" id="loadingSpinner">
+                <div class="spinner"></div>
+                <p>Calculating property value...</p>
+            </div>
+
+            <div class="prediction-result" id="predictionResult">
+                <h3>Predicted Property Status</h3>
+                <div class="prediction-value" id="predictionValue">YES</div>
+                <div class="prediction-range">Prediction Range: YES - NO</div>
+                <p>This estimate is based on current market conditions and similar properties in the selected area.</p>
+            </div>
+
+            <div class="buttons">
+                <a href="#" class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i> Return to Introduction</a>
+                <button type="submit" class="btn" id="predictBtn"><i class="fas fa-search-dollar"></i> Predict Status </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Real Estate Predictor | All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <script>
+        // Handle page transitions
+        document.getElementById('startBtn').addEventListener('click', function() {
+            document.getElementById('introPage').style.display = 'none';
+            document.getElementById('formPage').style.display = 'block';
+            window.scrollTo(0, 0);
+        });
+
+        document.getElementById('backBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('formPage').style.display = 'none';
+            document.getElementById('introPage').style.display = 'flex';
+            window.scrollTo(0, 0);
+        });
+
+        // Form validation
+        const form = document.getElementById('predictionForm');
+        const ageInput = document.getElementById('Property_Age');
+        const roomsInput = document.getElementById('Num_Rooms');
+        const bathroomsInput = document.getElementById('Num_Bathrooms');
+
+        // Error elements
+        const ageError = document.getElementById('ageError');
+        const roomsError = document.getElementById('roomsError');
+        const bathroomsError = document.getElementById('bathroomsError');
+
+        // Validation functions
+        ageInput.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (isNaN(value) || value < 0 || value > 200) {
+                ageError.style.display = 'block';
+            } else {
+                ageError.style.display = 'none';
+            }
+        });
+
+        roomsInput.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (isNaN(value) || value < 1 || value > 20) {
+                roomsError.style.display = 'block';
+            } else {
+                roomsError.style.display = 'none';
+            }
+        });
+
+        bathroomsInput.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (isNaN(value) || value < 1 || value > 10) {
+                bathroomsError.style.display = 'block';
+            } else {
+                bathroomsError.style.display = 'none';
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent actual form submission for demo
+
+            // Show loading spinner
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('predictBtn').disabled = true;
+
+            // Get selected location
+            const location = document.getElementById('Location_Area').value;
+
+            // Simulate API call (would be replaced with actual form submission)
+            setTimeout(function() {
+                // Hide spinner
+                document.getElementById('loadingSpinner').style.display = 'none';
+                document.getElementById('predictBtn').disabled = false;
+
+                // Set prediction based on location
+                const predictionValue = document.getElementById('predictionValue');
+                if (location === 'urban' || location === 'rural') { // Ameerpet or Nampally
+                    predictionValue.textContent = 'YES';
+                } else if (location === 'suburban') { // Gachibowli
+                    predictionValue.textContent = 'NO';
+                }
+
+                // Show results
+                document.getElementById('predictionResult').style.display = 'block';
+
+                // Scroll to results
+                document.getElementById('predictionResult').scrollIntoView({behavior: 'smooth'});
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
